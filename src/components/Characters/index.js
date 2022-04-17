@@ -1,13 +1,12 @@
-import { Grid } from '@nextui-org/react'
 import Character from '../Character'
 
 const Characters = ({ characters }) => {
   return (
-    <Grid.Container gap={2} justify='center'>
+    <ul className='character__list'>
       {characters?.map((character) => {
-        return <Character {...character} />
+        return <Character {...character} key={character.id} />
       })}
-    </Grid.Container>
+    </ul>
   )
 }
 

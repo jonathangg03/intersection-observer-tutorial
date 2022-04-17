@@ -1,3 +1,3 @@
 # intersection-observer-tutorial
 
-Tutorial del intersection observer en react
+Repositorio para el tutorial de intersectionObserver y estilizado con NextUI
