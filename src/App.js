@@ -1,63 +1,39 @@
-import {
-  Text,
-  Grid,
-  Card,
-  Divider,
-  User,
-  Spacer,
-  Button,
-  Row
-} from '@nextui-org/react'
-
-const chatacters = [
-  {
-    id: 1,
-    name: 'Rick Sanchez',
-    image: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg'
-  },
-  {
-    id: 2,
-    name: 'Rick Sanchez',
-    image: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg'
-  },
-  {
-    id: 1,
-    name: 'Rick Sanchez',
-    image: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg'
-  },
-  {
-    id: 2,
-    name: 'Rick Sanchez',
-    image: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg'
-  },
-  {
-    id: 1,
-    name: 'Rick Sanchez',
-    image: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg'
-  },
-  {
-    id: 2,
-    name: 'Rick Sanchez',
-    image: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg'
-  },
-  {
-    id: 1,
-    name: 'Rick Sanchez',
-    image: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg'
-  },
-  {
-    id: 2,
-    name: 'Rick Sanchez',
-    image: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg'
-  }
-]
+import { useState, useEffect, useRef, useCallback } from 'react'
+import useVisible from './hooks/useVisible'
+import { Text, Spacer } from '@nextui-org/react'
+import getCaracters from './getCharacters'
+import Characters from './components/Characters'
 
 function App() {
+  const [characters, setCharacters] = useState([])
+  const [page, setPage] = useState(1)
+
+  //IO
+  const visorRef = useRef(null)
+  const { visible } = useVisible({ visorRef })
+
+  const changePage = useCallback(() => setPage((prev) => prev + 1), [])
+
+  useEffect(() => {
+    if (visible) {
+      changePage()
+    }
+  }, [visible, changePage])
+
+  const gettingCharacters = async ({ page }) => {
+    const results = await getCaracters({ page })
+    setCharacters((prev) => prev.concat(results))
+  }
+
+  useEffect(() => {
+    gettingCharacters({ page })
+  }, [page])
+
   return (
     <div>
+      <Spacer y={1} />
       <Text
         h1
-        size={60}
         css={{
           textGradient: '45deg, $purple500 -20%, $pink500 100%'
         }}
@@ -67,45 +43,8 @@ function App() {
         Intersection Observer Tutorial
       </Text>
       <Spacer y={1} />
-      <Grid.Container gap={2} justify='center'>
-        {chatacters.map((character) => {
-          return (
-            <Grid>
-              <Card css={{ mw: '330px' }}>
-                <Card.Header>
-                  <User
-                    bordered
-                    color='primary'
-                    src={character.image}
-                    name={character.name}
-                    size='lg'
-                  />
-                </Card.Header>
-                <Divider />
-                <Card.Body css={{ py: '$10' }}>
-                  <ul>
-                    <li>Gener: {character.gender}</li>
-                    <li>Species: {character.species}</li>
-                    <li>Origin: {character.origin}</li>
-                    <li>Location: {character.location}</li>
-                  </ul>
-                </Card.Body>
-                <Divider />
-                <Card.Footer>
-                  <Row justify='flex-end'>
-                    <Button size='sm' light>
-                      Status:
-                    </Button>
-                    <Button size='sm' color='secondary'>
-                      {character.status}
-                    </Button>
-                  </Row>
-                </Card.Footer>
-              </Card>
-            </Grid>
-          )
-        })}
-      </Grid.Container>
+      <Characters characters={characters} />
+      <div ref={visorRef}></div>
     </div>
   )
 }
